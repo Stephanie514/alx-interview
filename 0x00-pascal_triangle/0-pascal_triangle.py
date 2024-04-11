@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-""" function def pascal_triangle(n): that returns a list of lists of integers"""
+""" function def pascal_triangle(n): that returns a
+list of lists of integers"""
+
 
 def pascal_triangle(n):
     """outer loop"""
