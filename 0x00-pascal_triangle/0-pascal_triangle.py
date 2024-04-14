@@ -9,10 +9,12 @@ def pascal_triangle(n):
 
     triangle = []
     for line in range(n):
-        row = [1]  # First element in each row is always 1
-        for i in range(1, line + 1):
-            # Calculating the next element in the row using the previous row
-            row.append(row[i - 1] * (line - i + 1) // i)
+        row = [1]
+        for i in range(1, line):
+            # Calculate the next element in the row using the previous row
+            row.append(triangle[line-1][i-1] + triangle[line-1][i])
+        if line > 0:
+            row.append(1)  # Last element in each row is always 1
         triangle.append(row)
 
     return triangle
