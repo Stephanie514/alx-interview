@@ -2,18 +2,16 @@
 """ function def pascal_triangle(n): that returns a
 list of lists of integers"""
 
-
 def pascal_triangle(n):
-    """outer loop"""
     if n <= 0:
         return []
-    value = []
-    for line in range(1, n + 1):
-        """inner loop"""
-        j = 1
-        row_series = []
+    
+    triangle = []
+    for line in range(n):
+        row = [1]  # First element in each row is always 1
         for i in range(1, line + 1):
-            row_series.append(j)
-            j = int(j * (line - i) / i)
-        value.append(row_series)
-    return value
+            # Calculating the next element in the row using the previous row
+            row.append(row[i - 1] * (line - i + 1) // i)
+        triangle.append(row)
+    
+    return triangle
