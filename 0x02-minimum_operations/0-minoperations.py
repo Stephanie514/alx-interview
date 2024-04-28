@@ -13,18 +13,24 @@ def minOperations(n):
     Returns:
     int: The fewest number of operations needed, or 0 if impossible to achieve.
     """
+
     if n <= 1:
         return 0
 
-    # Initialize an array to store the min operations needed for each number
-    dp = [0] * (n + 1)
+    # Initialize the minimum number of operations
+    operations = 0
 
-    # Iterate from 2 to n to fill the dp array
-    for i in range(2, n + 1):
-        # If i is prime, it can only be formed by copying 1 character i times
-        if dp[i] == 0:
-            dp[i] = i
-            for j in range(i * i, n + 1, i):
-                dp[j] = dp[i] + dp[j // i]
+    # Start with the smallest prime factor
+    divisor = 2
 
-    return dp[n]
+    while n > 1:
+        # Check if the current divisor divides n
+        while n % divisor == 0:
+            # If yes, update n and increment the operations
+            n //= divisor
+            operations += divisor
+
+        # Move to the next divisor
+        divisor += 1
+
+    return operations
