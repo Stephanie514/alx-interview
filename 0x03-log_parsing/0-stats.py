@@ -19,7 +19,16 @@ import sys
 
 # Initializing variables to store metrics
 total_file_size = 0
-status_counts = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+status_counts = {
+    200: 0,
+    301: 0,
+    400: 0,
+    401: 0,
+    403: 0,
+    404: 0,
+    405: 0,
+    500: 0
+}
 line_count = 0
 
 try:
@@ -27,13 +36,13 @@ try:
         parts = line.split()
         if len(parts) >= 7:
             try:
-                status_code = int(parts[-3])
+                status_code = int(parts[-2])  # Adjust index to -2
                 file_size = int(parts[-1])
                 # Updating the metrics
                 total_file_size += file_size
                 status_counts[status_code] += 1
                 line_count += 1
-            except ValueError:
+            except (ValueError, IndexError):
                 # Skip line if status code or file size is not an integer
                 continue
 
