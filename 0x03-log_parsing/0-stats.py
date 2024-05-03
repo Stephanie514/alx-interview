@@ -26,12 +26,16 @@ try:
     for line in sys.stdin:
         parts = line.split()
         if len(parts) >= 7:
-            status_code = int(parts[-3])
-            file_size = int(parts[-2])
-            # Updating the metrics
-            total_file_size += file_size
-            status_counts[status_code] += 1
-            line_count += 1
+            try:
+                status_code = int(parts[-3])
+                file_size = int(parts[-1])
+                # Updating the metrics
+                total_file_size += file_size
+                status_counts[status_code] += 1
+                line_count += 1
+            except ValueError:
+                # Skip line if status code or file size is not an integer
+                continue
 
         # Check if the 10 lines have been processed
         if line_count % 10 == 0:
@@ -42,7 +46,7 @@ try:
             print()
 
 except KeyboardInterrupt:
-    # Handing keyboard interruption (Ctrl+C)
+    # Handling keyboard interruption (Ctrl+C)
     print("File size: {}".format(total_file_size))
     for code in sorted(status_counts.keys()):
         if status_counts[code] > 0:
