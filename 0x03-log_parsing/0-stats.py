@@ -33,22 +33,28 @@ line_count = 0
 
 try:
     for line in sys.stdin:
-        parts = line.split()
-        if len(parts) >= 7:
-            try:
-                status_code = int(parts[-2])  # Adjust index to -2
-                file_size = int(parts[-1])
-                # Updating the metrics
-                total_file_size += file_size
+        parts = line.strip().split()
+        # Check if the line has correct number of parts
+        if len(parts) != 7:
+            continue
+        # Check if the format of the line is correct
+        if parts[2] != "GET" or parts[3] != "/projects/260" or parts[4] != "HTTP/1.1":
+            continue
+        try:
+            status_code = int(parts[5])
+            file_size = int(parts[6])
+            # Updating the metrics
+            total_file_size += file_size
+            if status_code in status_counts:
                 status_counts[status_code] += 1
-                line_count += 1
-            except (ValueError, IndexError):
-                # Skip line if status code or file size is not an integer
-                continue
+            line_count += 1
+        except ValueError:
+            # Skip line if status code or file size is not an integer
+            continue
 
         # Check if the 10 lines have been processed
         if line_count % 10 == 0:
-            print("File size: {}".format(total_file_size))
+            print("Total file size: {}".format(total_file_size))
             for code in sorted(status_counts.keys()):
                 if status_counts[code] > 0:
                     print("{}: {}".format(code, status_counts[code]))
@@ -56,7 +62,7 @@ try:
 
 except KeyboardInterrupt:
     # Handling keyboard interruption (Ctrl+C)
-    print("File size: {}".format(total_file_size))
+    print("Total file size: {}".format(total_file_size))
     for code in sorted(status_counts.keys()):
         if status_counts[code] > 0:
             print("{}: {}".format(code, status_counts[code]))
