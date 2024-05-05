@@ -1,6 +1,19 @@
 #!/usr/bin/python3
-"""Script that reads stdin line by line and computes metrics"""
+"""script that reads stdin line by line and computes metric
+Input format: <IP Address> - [<date>] "GET /projects/260 HTTP/1.1"
+<status code> <file size>
+After every 10 lines and/or a keyboard interruption (CTRL + C),
+print these statistics from the beginning:
+- Total file size: File size: <total size>
+- Number of lines by status code:
+  possible status code: 200, 301, 400, 401, 403, 404, 405 and 500
+  if a status code doesn’t appear or is not an integer, don’t print
+  anything for this status code
+  format: <status code>: <number>
+  status codes should be printed in ascending order
+"""
 
+# Import necessary modules
 import sys
 
 
@@ -9,53 +22,42 @@ def parseLogs():
     Parses logs from standard input and calculates
     the file size and status codes.
 
-    Args:None
-    Returns:None
+    Args:
+        None
+
+    Returns:
+        None
     """
+    stdin = sys.stdin
     lineNumber = 0
     fileSize = 0
     statusCodes = {}
 
-    # List of valid HTTP status codes
-    codes = {'200', '301', '400', '401', '403', '404', '405', '500'}
-
+    codes = ('200', '301', '400', '401', '403', '404', '405', '500')
     try:
-        # Loop through each line in standard input
-        for line in sys.stdin:
+        for line in stdin:
             lineNumber += 1
+            line = line.split()
+            try:
 
-            # Split the line into tokens
-            tokens = line.split()
-
-            # Check if the line matches the expected format
-            if len(tokens) >= 7 and tokens[-2] in codes:
-                try:
-                    # Extract file size from the last token of the line
-                    fileSize += int(tokens[-1])
-
-                    # Increment the count of the status code
-                    status_code = tokens[-2]
-                    current_count = statusCodes.get(status_code, 0)
-                    statusCodes[status_code] = current_count + 1
-                except ValueError:
-                    # Ignore lines with invalid file size
-                    pass
-
-            # If 10 lines have been processed
-            # generate report and reset counters
+                fileSize += int(line[-1])
+                if line[-2] in codes:
+                    try:
+                        statusCodes[line[-2]] += 1
+                    except KeyError:
+                        statusCodes[line[-2]] = 1
+            except (IndexError, ValueError):
+                pass
             if lineNumber == 10:
                 report(fileSize, statusCodes)
                 lineNumber = 0
-                fileSize = 0
-                statusCodes = {}
-
-        # Generate report for the remaining lines
-        if lineNumber > 0:
-            report(fileSize, statusCodes)
-
-    except KeyboardInterrupt:
-        # Handle keyboard interruption
         report(fileSize, statusCodes)
+    except KeyboardInterrupt as e:
+        report(fileSize, statusCodes)
+        raise
+    except BrokenPipeError:
+        # Handle the BrokenPipeError explicitly
+        pass
 
 
 def report(fileSize, statusCodes):
@@ -66,13 +68,14 @@ def report(fileSize, statusCodes):
         fileSize (int): total log size after every 10 successfully read lines
         statusCodes (dict): dictionary of status codes and counts
     """
-    # Print total file size
-    print("Total file size: {}".format(fileSize))
-
-    # Print status codes and their counts in ascending order
-    for code in sorted(statusCodes.keys(), key=int):
-        print("{}: {}".format(code, statusCodes[code]))
+    print("File size: {}".format(fileSize))
+    for key, value in sorted(statusCodes.items()):
+        print("{}: {}".format(key, value))
 
 
 if __name__ == '__main__':
-    parseLogs()
+    try:
+        # Calling parseLogs
+        parseLogs()
+    except BrokenPipeError:
+        pass
