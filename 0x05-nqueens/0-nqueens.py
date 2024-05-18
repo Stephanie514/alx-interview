@@ -57,4 +57,8 @@ if __name__ == "__main__":
         print("N must be a number", file=sys.stderr)
         sys.exit(1)
 
+    if n_queens < 4:
+        print("N must be at least 4", file=sys.stderr)
+        sys.exit(1)
+
     solve_n_queens(n_queens)
