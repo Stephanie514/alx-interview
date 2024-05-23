@@ -11,7 +11,7 @@ const movieID = process.argv[2];
 const filmEndpoint = `https://swapi.dev/api/films/${movieID}/`;
 
 // fetches and print character names
-function fetchCharacterNames(characterURLs) {
+function fetchCharacterNames (characterURLs) {
   const characterPromises = characterURLs.map(url => {
     return new Promise((resolve, reject) => {
       request(url, (error, response, body) => {
@@ -36,7 +36,7 @@ function fetchCharacterNames(characterURLs) {
     });
 }
 
-function fetchMovieDetails(movieID) {
+function fetchMovieDetails (movieID) {
   request(filmEndpoint, (error, response, body) => {
     if (error) {
       console.error(error);
