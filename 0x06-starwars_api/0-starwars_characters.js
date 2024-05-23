@@ -1,36 +1,56 @@
 #!/usr/bin/node
+
 const request = require('request');
 
-const movieId = process.argv[2];
+if (process.argv.length !== 3) {
+  console.error('Usage: ./0-starwars_characters.js <Movie ID>');
+  process.exit(1);
+}
 
-const baseUrl = 'https://swapi.dev/api';
+const movieID = process.argv[2];
+const filmEndpoint = `https://swapi.dev/api/films/${movieID}/`;
 
-function fetchAndPrintCharacters(movieId) {
-  const movieUrl = `${baseUrl}/films/${movieId}/`;
-
-  request(movieUrl, (error, response, body) => {
-    if (error) {
-      console.error('Error fetching the movie details:', error);
-      return;
-    }
-
-    const movieDetails = JSON.parse(body);
-
-    const characterUrls = movieDetails.characters;
-
-    characterUrls.forEach((characterUrl) => {
-      request(characterUrl, (error, response, body) => {
+// fetches and print character names
+function fetchCharacterNames(characterURLs) {
+  const characterPromises = characterURLs.map(url => {
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
         if (error) {
-          console.error('Error fetching the character details:', error);
-          return;
+          return reject(error);
         }
-
-        const characterDetails = JSON.parse(body);
-
-        console.log(characterDetails.name);
+        if (response.statusCode !== 200) {
+          return reject(new Error(`Error: Unable to fetch data (status code: ${response.statusCode})`));
+        }
+        const character = JSON.parse(body);
+        resolve(character.name);
       });
     });
   });
+
+  Promise.all(characterPromises)
+    .then(names => {
+      names.forEach(name => console.log(name));
+    })
+    .catch(error => {
+      console.error(error);
+    });
 }
 
-fetchAndPrintCharacters(movieId);
+function fetchMovieDetails(movieID) {
+  request(filmEndpoint, (error, response, body) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
+    if (response.statusCode !== 200) {
+      console.error(new Error(`Error: Unable to fetch data (status code: ${response.statusCode})`));
+      return;
+    }
+
+    const film = JSON.parse(body);
+    const characterURLs = film.characters;
+    fetchCharacterNames(characterURLs);
+  });
+}
+
+fetchMovieDetails(movieID);
