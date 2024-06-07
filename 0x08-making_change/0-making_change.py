@@ -6,6 +6,7 @@ This module provides a function to determine the fewest number of coins needed
 to meet a given amount total.
 """
 
+
 def makeChange(coins, total):
     """
     Determine the fewest number of coins needed to meet a given total.
@@ -24,9 +25,12 @@ def makeChange(coins, total):
     min_coins = [float('inf')] * (total + 1)
     min_coins[0] = 0
 
-    for amount in range(1, total + 1):
-        for coin in coins:
-            if coin <= amount:
-                min_coins[amount] = min(min_coins[amount], min_coins[amount - coin] + 1)
+    for coin in coins:
+        for amount in range(coin, total + 1):
+            if min_coins[amount - coin] != float('inf'):
+                min_coins[amount] = min(
+                    min_coins[amount],
+                    min_coins[amount - coin] + 1
+                )
 
     return min_coins[total] if min_coins[total] != float('inf') else -1
