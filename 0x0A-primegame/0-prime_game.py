@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+"""0-prime_game"""
+
+
 def eratosthenes_sieve(max_n):
     """
     Generates a list of prime numbers up to a given maximum
