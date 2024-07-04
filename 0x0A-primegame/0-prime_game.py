@@ -1,4 +1,16 @@
+#!/usr/bin/python3
+
 def eratosthenes_sieve(max_n):
+    """
+    Generates a list of prime numbers up to a given maximum
+    using the Sieve of Eratosthenes.
+
+    Args:
+    max_n (int): This is the upper limit for generating prime numbers.
+
+    Returns:
+    list: list of prime numbers up to max_n.
+    """
     is_prime = [True] * (max_n + 1)
     is_prime[0] = is_prime[1] = False
     for start in range(2, int(max_n ** 0.5) + 1):
@@ -9,6 +21,18 @@ def eratosthenes_sieve(max_n):
 
 
 def isWinner(x, nums):
+    """
+    Determines winner of multiple rounds of the prime number game.
+
+    Args:
+    x (int): Number of rounds to be played.
+    nums (list): list of integers representing upper limit
+                 of numbers for each round.
+
+    Returns:
+    str or None: Name of player with most wins ('Maria' or 'Ben'),
+                 or None if winner cannot be determined.
+    """
     if not nums or x < 1:
         return None
 
@@ -20,6 +44,15 @@ def isWinner(x, nums):
     primes = eratosthenes_sieve(max_n)
 
     def simulate_game(n):
+        """
+        Simulates a single round of the game.
+
+        Args:
+        n (int): Upper limit of numbers for current round.
+
+        Returns:
+        str: Name of the winner of the round ('Maria' or 'Ben').
+        """
         # Creating a set to track remaining numbers
         remaining = set(range(1, n + 1))
         player_turn = 0  # 0 for Maria, 1 for Ben
